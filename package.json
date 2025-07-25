@@ -1,0 +1,25 @@
+{
+    "name": "dive-deco",
+    "version": "0.0.1",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc --project ./tsconfig.json",
+        "test": "npm run build && mocha",
+        "format": "prettier --write \"src/**/*.ts\" \"*.{js,ts,json}\"",
+        "format:check": "prettier --check \"src/**/*.ts\" \"*.{js,ts,json}\""
+    },
+    "author": "KG32",
+    "license": "ISC",
+    "description": "",
+    "devDependencies": {
+        "@types/chai": "^5.2.2",
+        "@types/mocha": "^10.0.10",
+        "@types/node": "^24.1.0",
+        "chai": "^5.2.1",
+        "mocha": "^11.7.1",
+        "prettier": "^3.6.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3"
+    }
+}
