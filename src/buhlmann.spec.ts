@@ -12,10 +12,6 @@ import {
 } from './index';
 
 // Test utility functions
-function modelDefault(): BuhlmannModel {
-    return BuhlmannModel.default();
-}
-
 function modelGf(gfLow: number, gfHigh: number): BuhlmannModel {
     const config = new BuhlmannConfig([gfLow, gfHigh]);
     return new BuhlmannModel(config);
@@ -23,27 +19,6 @@ function modelGf(gfLow: number, gfHigh: number): BuhlmannModel {
 
 function gasAir(): Gas {
     return new Gas(0.21, 0);
-}
-
-function assertCloseToAbs(a: number, b: number, tolerance: number): void {
-    if (Math.abs(a - b) > tolerance) {
-        throw new Error(
-            `${a} is not close to ${b} with tolerance of ${tolerance}`
-        );
-    }
-}
-
-function assertCloseToPercent(
-    a: number,
-    b: number,
-    tolerancePercent: number
-): void {
-    const tolerance = b * (tolerancePercent / 100.0);
-    if (Math.abs(a - b) > tolerance) {
-        throw new Error(
-            `${a} is not close to ${b} within ${tolerancePercent} percent tolerance (${tolerance})`
-        );
-    }
 }
 
 describe('dive-deco TypeScript library', () => {
@@ -115,7 +90,7 @@ describe('dive-deco TypeScript library', () => {
 
     describe('BuhlmannModel', () => {
         it('should panic on invalid depth', () => {
-            const model = modelDefault();
+            const model = BuhlmannModel.default();
             expect(() =>
                 model.record(
                     Depth.fromMeters(-10),
@@ -126,20 +101,19 @@ describe('dive-deco TypeScript library', () => {
         });
 
         it('should calculate ceiling', () => {
-            const model = modelDefault();
+            const model = BuhlmannModel.default();
             const air = new Gas(0.21, 0);
             model.record(Depth.fromMeters(40), Time.fromMinutes(30), air);
             model.record(Depth.fromMeters(30), Time.fromMinutes(30), air);
             const calculatedCeiling = model.ceiling();
-            assertCloseToPercent(
-                calculatedCeiling.asMeters(),
+            expect(calculatedCeiling.asMeters()).to.be.closeTo(
                 Depth.fromMeters(7.802523739933558).asMeters(),
-                0.5
+                Depth.fromMeters(7.802523739933558).asMeters() * 0.005 // 0.5% tolerance
             );
         });
 
         it('should calculate gfs', () => {
-            const model = modelDefault();
+            const model = BuhlmannModel.default();
             const air = new Gas(0.21, 0);
             model.record(Depth.fromMeters(50), Time.fromMinutes(20), air);
             const supersaturation1 = model.supersaturation();
@@ -159,7 +133,7 @@ describe('dive-deco TypeScript library', () => {
         });
 
         it('should calculate initial gfs', () => {
-            const model = modelDefault();
+            const model = BuhlmannModel.default();
             const air = new Gas(0.21, 0);
             model.record(Depth.fromMeters(0), Time.zero(), air);
             const supersaturation = model.supersaturation();
@@ -168,8 +142,8 @@ describe('dive-deco TypeScript library', () => {
         });
 
         it('should test model records equality', () => {
-            const model1 = modelDefault();
-            const model2 = modelDefault();
+            const model1 = BuhlmannModel.default();
+            const model2 = BuhlmannModel.default();
             const air = new Gas(0.21, 0);
             const testDepth = Depth.fromMeters(50);
             const testTime = Time.fromMinutes(100);
@@ -230,7 +204,7 @@ describe('dive-deco TypeScript library', () => {
         });
 
         it('should test NDL cut off', () => {
-            const model = modelDefault();
+            const model = BuhlmannModel.default();
             const air = new Gas(0.21, 0);
             model.record(Depth.fromMeters(0), Time.zero(), air);
             expect(model.ndl().asMinutes()).to.equal(99);
@@ -334,14 +308,14 @@ describe('dive-deco TypeScript library', () => {
             model.record(Depth.fromMeters(40), Time.fromMinutes(20), air);
             const ceiling = model.ceiling();
             // TypeScript implementation with 9 m/min ascent rate converges to ~3.13m
-            assertCloseToAbs(ceiling.asMeters(), 3.13, 0.3);
+            expect(ceiling.asMeters()).to.be.closeTo(3.13, 0.3);
         });
 
         it('should test CNS OTU', () => {
             const model = BuhlmannModel.default();
             model.record(Depth.fromMeters(40), Time.fromMinutes(10), Gas.air());
             model.recordTravelWithRate(Depth.fromMeters(0), 10, Gas.air());
-            assertCloseToAbs(model.otu(), 13, 1);
+            expect(model.otu()).to.be.closeTo(13, 1);
         });
     });
 
@@ -368,13 +342,13 @@ describe('dive-deco TypeScript library', () => {
             const air = gasAir();
             model.record(Depth.fromMeters(40), Time.fromMinutes(10), air);
             const ceiling = model.ceiling();
-            assertCloseToAbs(ceiling.asMeters(), 8, 0.5);
+            expect(ceiling.asMeters()).to.be.closeTo(8, 0.5);
         });
     });
 
     describe('Travel Tests', () => {
         it('should test travel descent', () => {
-            const model = modelDefault();
+            const model = BuhlmannModel.default();
             const targetDepth = Depth.fromMeters(40);
             const descentTime = Time.fromMinutes(10);
             model.recordTravel(targetDepth, descentTime, gasAir());
@@ -385,7 +359,7 @@ describe('dive-deco TypeScript library', () => {
             expect(diveState.time.asMinutes()).to.equal(
                 descentTime.asMinutes()
             );
-            assertCloseToPercent(supersaturation.gfSurf, 62, 5);
+            expect(supersaturation.gfSurf).to.be.closeTo(62, 62 * 0.05); // 5% tolerance
         });
 
         it('should test travel ascent', () => {
@@ -424,19 +398,18 @@ describe('dive-deco TypeScript library', () => {
             const state = model.diveState();
             expect(state.depth.asMeters()).to.equal(targetDepth.asMeters());
             // Use tolerance for timing due to potential rounding differences in travel time calculation
-            assertCloseToAbs(
-                state.time.asSeconds(),
+            expect(state.time.asSeconds()).to.be.closeTo(
                 bottomTime.add(expectedTravelTime).asSeconds(),
                 2 // Allow 2-second tolerance
             );
-            assertCloseToPercent(model.supersaturation().gf99, 61, 5);
+            expect(model.supersaturation().gf99).to.be.closeTo(61, 61 * 0.05); // 5% tolerance
         });
     });
 
     describe('Decompression Tests', () => {
         it('should test deco ascent no deco', () => {
             const air = gasAir();
-            const model = modelDefault();
+            const model = BuhlmannModel.default();
             model.record(Depth.fromMeters(20), Time.fromMinutes(5), air);
             const decoRuntime = model.deco([air]);
             expect(decoRuntime.decoStages.length).to.equal(1); // single continuous ascent
