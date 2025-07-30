@@ -187,18 +187,26 @@ export class BuhlmannModel extends DecoModel {
                     const simDepth = simModel.diveState().depth;
 
                     // Break if at surface or at/below the ceiling
-                    if (simDepth.asMeters() <= 0 || simDepth.asMeters() <= calculatedCeiling.asMeters()) {
+                    if (
+                        simDepth.asMeters() <= 0 ||
+                        simDepth.asMeters() <= calculatedCeiling.asMeters()
+                    ) {
                         break;
                     }
 
                     // Ascend to the current ceiling at configured ascent rate
-                    simModel.recordTravelWithRate(calculatedCeiling, config.decoAscentRate(), simGas);
+                    simModel.recordTravelWithRate(
+                        calculatedCeiling,
+                        config.decoAscentRate(),
+                        simGas
+                    );
 
                     // Recalculate ceiling after ascent
                     calculatedCeiling = simModel.ceiling();
 
                     iterations++;
-                    if (iterations > 50) { // Increase iteration limit for better convergence
+                    if (iterations > 50) {
+                        // Increase iteration limit for better convergence
                         break;
                     }
                 }
@@ -460,7 +468,10 @@ export class BuhlmannModel extends DecoModel {
     private leadingComp(): Compartment {
         let leadingComp = this.compartments[0];
         for (const compartment of this.compartments.slice(1)) {
-            if (compartment.minTolerableAmbPressure > leadingComp.minTolerableAmbPressure) {
+            if (
+                compartment.minTolerableAmbPressure >
+                leadingComp.minTolerableAmbPressure
+            ) {
                 leadingComp = compartment;
             }
         }
@@ -497,12 +508,20 @@ export class BuhlmannModel extends DecoModel {
         }
     }
 
-    private recalculateCompartments(record: { depth: Depth; time: Time; gas: Gas }): void {
+    private recalculateCompartments(record: {
+        depth: Depth;
+        time: Time;
+        gas: Gas;
+    }): void {
         const [gfLow, gfHigh] = this.configuration.gradientFactors();
 
         // First recalculate all compartments with GF high
         for (const compartment of this.compartments) {
-            compartment.recalculate(record, gfHigh, this.configuration.surfacePressure());
+            compartment.recalculate(
+                record,
+                gfHigh,
+                this.configuration.surfacePressure()
+            );
         }
 
         // If GF slope is enabled, recalculate with appropriate GF
@@ -519,7 +538,11 @@ export class BuhlmannModel extends DecoModel {
         }
     }
 
-    private recalculateOxTox(record: { depth: Depth; time: Time; gas: Gas }): void {
+    private recalculateOxTox(record: {
+        depth: Depth;
+        time: Time;
+        gas: Gas;
+    }): void {
         const partialPressures = record.gas.inspiredPartialPressures(
             record.depth,
             this.configuration.surfacePressure()
@@ -545,20 +568,28 @@ export class BuhlmannModel extends DecoModel {
 
         if (!this.state.gfLowDepth) {
             // Direct calculation for gf_low_depth
-            const surfacePressureBar = this.configuration.surfacePressure() / 1000.0;
+            const surfacePressureBar =
+                this.configuration.surfacePressure() / 1000.0;
             const gfLowFraction = gfLow / 100.0;
 
             let maxCalculatedDepthM = 0.0;
 
             for (const comp of this.compartments) {
                 const totalIp = comp.totalIp;
-                const [, aWeighted, bWeighted] = comp.weightedZhlParams(comp.heIp, comp.n2Ip);
+                const [, aWeighted, bWeighted] = comp.weightedZhlParams(
+                    comp.heIp,
+                    comp.n2Ip
+                );
 
                 // General case: P_amb = (P_ip - G*a) / (1 - G + G/b)
-                const maxAmbP = (totalIp - gfLowFraction * aWeighted) /
+                const maxAmbP =
+                    (totalIp - gfLowFraction * aWeighted) /
                     (1.0 - gfLowFraction + gfLowFraction / bWeighted);
 
-                const maxDepth = Math.max(0.0, 10.0 * (maxAmbP - surfacePressureBar));
+                const maxDepth = Math.max(
+                    0.0,
+                    10.0 * (maxAmbP - surfacePressureBar)
+                );
                 maxCalculatedDepthM = Math.max(maxCalculatedDepthM, maxDepth);
             }
 
@@ -575,7 +606,9 @@ export class BuhlmannModel extends DecoModel {
 
     private gfSlopePoint(gfLowDepth: Depth, depth: Depth): number {
         const [gfLow, gfHigh] = this.configuration.gradientFactors();
-        const slopePoint = gfHigh - (((gfHigh - gfLow) / gfLowDepth.asMeters()) * depth.asMeters());
+        const slopePoint =
+            gfHigh -
+            ((gfHigh - gfLow) / gfLowDepth.asMeters()) * depth.asMeters();
         return slopePoint;
     }
 

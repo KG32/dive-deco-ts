@@ -36,22 +36,22 @@ describe('BuhlmannConfigBuilder', () => {
 
         it('should validate configuration and throw on invalid values', () => {
             expect(() => {
-                BuhlmannConfig.builder()
-                    .gradientFactors(150, 200)
-                    .build();
-            }).to.throw('Invalid configuration: GF Low must be between 1 and 100');
+                BuhlmannConfig.builder().gradientFactors(150, 200).build();
+            }).to.throw(
+                'Invalid configuration: GF Low must be between 1 and 100'
+            );
 
             expect(() => {
-                BuhlmannConfig.builder()
-                    .gradientFactors(80, 50)
-                    .build();
-            }).to.throw('Invalid configuration: GF Low must be less than or equal to GF High');
+                BuhlmannConfig.builder().gradientFactors(80, 50).build();
+            }).to.throw(
+                'Invalid configuration: GF Low must be less than or equal to GF High'
+            );
 
             expect(() => {
-                BuhlmannConfig.builder()
-                    .surfacePressure(400)
-                    .build();
-            }).to.throw('Invalid configuration: Surface pressure must be between 500 and 1200 mbar');
+                BuhlmannConfig.builder().surfacePressure(400).build();
+            }).to.throw(
+                'Invalid configuration: Surface pressure must be between 500 and 1200 mbar'
+            );
         });
 
         it('should support partial configuration', () => {
@@ -68,8 +68,7 @@ describe('BuhlmannConfigBuilder', () => {
         });
 
         it('should maintain builder reusability', () => {
-            const builder = BuhlmannConfig.builder()
-                .gradientFactors(40, 90);
+            const builder = BuhlmannConfig.builder().gradientFactors(40, 90);
 
             const config1 = builder.surfacePressure(1000).build();
             const config2 = builder.surfacePressure(1020).build();
@@ -89,7 +88,14 @@ describe('BuhlmannConfigBuilder', () => {
         });
 
         it('should maintain backward compatibility with constructor', () => {
-            const config = new BuhlmannConfig([30, 80], 1020, 9, CeilingType.Adaptive, true, NDLType.ByCeiling);
+            const config = new BuhlmannConfig(
+                [30, 80],
+                1020,
+                9,
+                CeilingType.Adaptive,
+                true,
+                NDLType.ByCeiling
+            );
 
             expect(config.gradientFactors()).to.deep.equal([30, 80]);
             expect(config.surfacePressure()).to.equal(1020);

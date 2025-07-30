@@ -1,6 +1,6 @@
 {
     "name": "dive-deco",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "A TypeScript implementation of decompression calculation algorithms for scuba diving, featuring Bühlmann ZH-L16C algorithm with gradient factors, gas management, and oxygen toxicity tracking.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -23,6 +23,7 @@
         "diving",
         "decompression",
         "buhlmann",
+        "buehlmann",
         "zhl16c",
         "gradient-factors",
         "ndl",
@@ -30,8 +31,7 @@
         "gas-management",
         "nitrox",
         "trimix",
-        "oxygen-toxicity",
-        "typescript"
+        "oxygen-toxicity"
     ],
     "author": "KG32",
     "license": "ISC",

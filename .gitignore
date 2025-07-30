@@ -4,3 +4,4 @@ tsconfig.tsbuildinfo
 dist
 test-dist
 .editorconfig
+tsconfig.test.tsbuildinfo

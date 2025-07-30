@@ -471,8 +471,12 @@ describe('dive-deco TypeScript library', () => {
                 );
                 expect(stage.endDepth.asMeters()).to.equal(expected.endDepth);
                 // Use tolerance for duration due to rounding differences
-                expect(Math.abs(stage.duration.asSeconds() - expected.duration)).to.be.lessThan(2,
-                    `Stage ${i} duration: expected ${expected.duration}s, got ${stage.duration.asSeconds()}s`);
+                expect(
+                    Math.abs(stage.duration.asSeconds() - expected.duration)
+                ).to.be.lessThan(
+                    2,
+                    `Stage ${i} duration: expected ${expected.duration}s, got ${stage.duration.asSeconds()}s`
+                );
                 expect(stage.gas.equals(air)).to.be.true;
             });
         });
