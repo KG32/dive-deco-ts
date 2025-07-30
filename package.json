@@ -1,17 +1,51 @@
 {
     "name": "dive-deco",
     "version": "0.0.1",
+    "description": "A TypeScript implementation of decompression calculation algorithms for scuba diving, featuring Bühlmann ZH-L16C algorithm with gradient factors, gas management, and oxygen toxicity tracking.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
+    "files": [
+        "dist/*.js",
+        "dist/*.d.ts",
+        "README.md",
+        "LICENSE"
+    ],
     "scripts": {
         "build": "tsc --project ./tsconfig.json",
-        "test": "npm run build && mocha",
+        "build:test": "tsc --project ./tsconfig.test.json",
+        "test": "npm run build:test && mocha test-dist/**/*.{spec,test}.js",
         "format": "prettier --write \"src/**/*.ts\" \"*.{js,ts,json}\"",
-        "format:check": "prettier --check \"src/**/*.ts\" \"*.{js,ts,json}\""
+        "format:check": "prettier --check \"src/**/*.ts\" \"*.{js,ts,json}\"",
+        "prepublishOnly": "npm run test"
     },
+    "keywords": [
+        "scuba",
+        "diving",
+        "decompression",
+        "buhlmann",
+        "zhl16c",
+        "gradient-factors",
+        "ndl",
+        "ceiling",
+        "gas-management",
+        "nitrox",
+        "trimix",
+        "oxygen-toxicity",
+        "typescript"
+    ],
     "author": "KG32",
     "license": "ISC",
-    "description": "",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/KG32/dive-deco-ts.git"
+    },
+    "bugs": {
+        "url": "https://github.com/KG32/dive-deco-ts/issues"
+    },
+    "homepage": "https://github.com/KG32/dive-deco-ts#readme",
+    "engines": {
+        "node": ">=16.0.0"
+    },
     "devDependencies": {
         "@types/chai": "^5.2.2",
         "@types/mocha": "^10.0.10",

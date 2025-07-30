@@ -12,7 +12,7 @@ export type { DiveState, DecoModelConfig } from './decoModel';
 
 // Buhlmann ZH-L16C implementation
 export { BuhlmannModel } from './buhlmannModel';
-export { BuhlmannConfig } from './buhlmannConfig';
+export { BuhlmannConfig, BuhlmannConfigBuilder } from './buhlmannConfig';
 export { Compartment } from './compartment';
 export type { Supersaturation } from './compartment';
 

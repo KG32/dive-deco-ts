@@ -1,0 +1,36 @@
+# Source files (only include compiled dist)
+src/
+
+# Test files
+*.spec.ts
+*.spec.js
+*.spec.d.ts
+**/*.spec.*
+
+# Development files
+.vscode/
+.editorconfig
+.prettierrc
+.mocharc.json
+example*.ts
+example*.js
+
+# Build artifacts
+tsconfig.tsbuildinfo
+*.tgz
+
+# Development dependencies
+node_modules/
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# Documentation source
+docs/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
